@@ -1,4 +1,4 @@
-package com.example.odcgithubrepoapp.presentation.screens.repo_list_screen
+package com.example.odcgithubrepoapp.presentation.screens.issues_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -17,45 +17,51 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.githubreposapp.presentation.common_components.shimmer.issues.AnimateShimmerIssuesList
 import com.example.odcgithubrepoapp.R
 import com.example.odcgithubrepoapp.presentation.common_component.AppBar
 import com.example.odcgithubrepoapp.presentation.common_component.ErrorSection
-import com.example.odcgithubrepoapp.presentation.common_component.shimmer.repo_list.AnimateShimmerRepoList
-import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.component.RepoItem
-import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.model.RepoListUiState
-import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.preview_data.fakeRepoListErrorUiState
-import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.preview_data.fakeRepoListLoadingUiState
-import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.preview_data.fakeRepoListUiState
-import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.viewmodel.RepoListViewModel
+import com.example.odcgithubrepoapp.presentation.screens.issues_screen.component.IssueItem
+import com.example.odcgithubrepoapp.presentation.screens.issues_screen.model.IssuesUiState
+import com.example.odcgithubrepoapp.presentation.screens.issues_screen.preview_data.fakeIssuesErrorUiState
+import com.example.odcgithubrepoapp.presentation.screens.issues_screen.preview_data.fakeIssuesLoadingUiState
+import com.example.odcgithubrepoapp.presentation.screens.issues_screen.preview_data.fakeIssuesUiState
+import com.example.odcgithubrepoapp.presentation.screens.issues_screen.viewmodel.IssuesListViewModel
 import com.example.odcgithubrepoapp.presentation.theme.ODCGithubRepoAppTheme
 
 @Composable
-fun RepoListScreen(
-    onRepoItemClicked: (String, String) -> Unit
+fun IssuesScreen(
+    modifier: Modifier = Modifier,
+    onClickBack: () -> Unit,
+    ownerName: String,
+    name: String
 ) {
-    val repoListViewModel: RepoListViewModel = hiltViewModel()
-    LaunchedEffect(Unit) {
-        repoListViewModel.requestGithubRepoList()
-    }
-    val repoListUiSate by repoListViewModel.repoListStateFlow.collectAsStateWithLifecycle()
 
-    RepoListContent(
-        repoListUiSate = repoListUiSate,
+    val issuesViewModel: IssuesListViewModel = hiltViewModel()
+
+    LaunchedEffect(Unit) {
+        issuesViewModel.requestGithubIssuesList(ownerName,name)
+    }
+
+    val issuesUiState by issuesViewModel.issuesStateFlow.collectAsStateWithLifecycle()
+
+    IssuesContent(
+        issuesUiState = issuesUiState,
         onRefreshButtonClicked = {
-            repoListViewModel.requestGithubRepoList()
+            issuesViewModel.requestGithubIssuesList(ownerName,name)
         },
-        onRepoItemClicked = onRepoItemClicked
+        onClickBack = onClickBack
     )
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RepoListContent(
+fun IssuesContent(
     modifier: Modifier = Modifier,
-    repoListUiSate: RepoListUiState,
+    issuesUiState: IssuesUiState,
     onRefreshButtonClicked: () -> Unit,
-    onRepoItemClicked: (String, String) -> Unit
+    onClickBack: () -> Unit,
 ) {
     Scaffold(
         modifier = modifier
@@ -63,31 +69,32 @@ fun RepoListContent(
             .background(MaterialTheme.colorScheme.background),
         topBar = {
             AppBar(
-                title = R.string.app_name,
-                showBackButton = false
+                title = R.string.issues_app_bar_title,
+                onBackButtonClicked = onClickBack
             )
         }
     ) { innerPadding ->
+
         when {
-            repoListUiSate.isLoading -> {
-                AnimateShimmerRepoList(
+            issuesUiState.isLoading -> {
+                AnimateShimmerIssuesList(
                     innerPadding = innerPadding
                 )
             }
 
-            repoListUiSate.isError -> {
+            issuesUiState.isError -> {
                 ErrorSection(
                     innerPadding = innerPadding,
-                    customErrorExceptionUiModel = repoListUiSate.customRemoteExceptionUiModel,
+                    customErrorExceptionUiModel = issuesUiState.customRemoteExceptionUiModel,
                     onRefreshButtonClicked = {
                         onRefreshButtonClicked()
                     }
                 )
             }
 
-            repoListUiSate.repoList.isNotEmpty() -> {
+            issuesUiState.issuesList.isNotEmpty() -> {
                 Column(
-                    Modifier
+                    modifier = Modifier
                         .padding(innerPadding)
                         .background(MaterialTheme.colorScheme.background)
                 ) {
@@ -96,57 +103,52 @@ fun RepoListContent(
                             .padding(horizontal = 16.dp)
                             .padding(bottom = 16.dp)
                     ) {
-                        items(repoListUiSate.repoList) { githubRepoUiModel ->
-                            RepoItem(
-                                githubRepoUiModel = githubRepoUiModel,
-                                onRepoItemClicked = onRepoItemClicked
+                        items(issuesUiState.issuesList) { githubIssuesUiModel ->
+                            IssueItem(
+                                githubIssuesUiModel = githubIssuesUiModel
                             )
                         }
                     }
                 }
-
             }
         }
 
+
     }
 }
 
 @Preview
 @Composable
-private fun PreviewRepoListScreen() {
+private fun PreviewIssuesScreen() {
     ODCGithubRepoAppTheme {
-        RepoListContent(
-            repoListUiSate = fakeRepoListUiState,
+        IssuesContent(
+            issuesUiState = fakeIssuesUiState,
             onRefreshButtonClicked = {},
-            onRepoItemClicked = { _, _ -> }
+            onClickBack = {}
         )
     }
 }
 
 @Preview
 @Composable
-private fun PreviewRepoListScreenLoading() {
+private fun PreviewIssuesScreenLoading() {
     ODCGithubRepoAppTheme {
-        RepoListContent(
-            repoListUiSate = fakeRepoListLoadingUiState,
+        IssuesContent(
+            issuesUiState = fakeIssuesLoadingUiState,
             onRefreshButtonClicked = {},
-            onRepoItemClicked = { _, _ -> }
+            onClickBack = {}
         )
     }
 }
 
 @Preview
 @Composable
-private fun PreviewRepoListScreenError() {
+private fun PreviewIssuesScreenError() {
     ODCGithubRepoAppTheme {
-        RepoListContent(
-            repoListUiSate = fakeRepoListErrorUiState,
+        IssuesContent(
+            issuesUiState = fakeIssuesErrorUiState,
             onRefreshButtonClicked = {},
-            onRepoItemClicked = { _, _ -> }
+            onClickBack = {}
         )
     }
 }
-
-
-
-

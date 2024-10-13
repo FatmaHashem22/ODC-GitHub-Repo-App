@@ -66,8 +66,12 @@ fun RepoItem(
             Modifier.padding(12.dp)
         ) {
             Row {
-                Text(text = githubRepoUiModel.name, modifier = Modifier.weight(1f))
-                Text(text =  githubRepoUiModel.starsCount)
+                Text(
+                    text = githubRepoUiModel.name,
+                    modifier = Modifier.weight(1f),
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(text = githubRepoUiModel.starsCount)
                 Icon(
                     painter = painterResource(R.drawable.ic_star),
                     contentDescription = null,

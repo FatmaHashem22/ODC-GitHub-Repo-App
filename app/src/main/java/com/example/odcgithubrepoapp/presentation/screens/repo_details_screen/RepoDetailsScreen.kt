@@ -113,6 +113,7 @@ fun DetailsContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally

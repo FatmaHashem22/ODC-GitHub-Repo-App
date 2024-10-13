@@ -15,6 +15,7 @@
     // issues screen
     <string name="issues_app_bar_title">Issues</string>
     <string name="issue_created_at">Created At:</string>
+    <string name="issue_closed_at">Closed At:</string>
     <string name="column">:</string>
 
     // exception messages

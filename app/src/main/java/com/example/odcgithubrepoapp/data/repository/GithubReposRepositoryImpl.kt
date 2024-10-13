@@ -2,8 +2,10 @@ package com.example.odcgithubrepoapp.data.repository
 
 import com.example.odcgithubrepoapp.data.data_sources.local.GithubLocalDataSource
 import com.example.odcgithubrepoapp.data.data_sources.remote.GithubRemoteDataSource
+import com.example.odcgithubrepoapp.data.mapper.toGithubIssuesListDomainModel
 import com.example.odcgithubrepoapp.data.mapper.toGithubReposDomainModel
 import com.example.odcgithubrepoapp.data.mapper.toRepoDetailsDomainModel
+import com.example.odcgithubrepoapp.domain.model.GithubIssuesDomainModel
 import com.example.odcgithubrepoapp.domain.model.GithubReposDomainModel
 import com.example.odcgithubrepoapp.domain.model.RepoDetailsDomainModel
 import com.example.odcgithubrepoapp.domain.repository.GithubReposRepository
@@ -22,4 +24,5 @@ class GithubReposRepositoryImpl @Inject constructor(
     override suspend fun fetchRepoDetails(ownerName: String, name: String): RepoDetailsDomainModel {
         return githubRemoteDataSource.fetchRepoDetails(ownerName, name).toRepoDetailsDomainModel()
     }
+
 }

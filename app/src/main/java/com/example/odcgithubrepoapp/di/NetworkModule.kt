@@ -3,6 +3,7 @@ package com.example.odcgithubrepoapp.di
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.example.odcgithubrepoapp.data.Constants.Companion.BASE_URL
+import com.example.odcgithubrepoapp.data.data_sources.remote.retrofit.api.IssuesListApi
 import com.example.odcgithubrepoapp.data.data_sources.remote.retrofit.api.RepoDetailsApi
 import com.example.odcgithubrepoapp.data.data_sources.remote.retrofit.api.RepositoriesListApi
 import dagger.Module
@@ -18,6 +19,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    @Provides
+    @Singleton
+    fun provideIssuesListApi(
+        retrofit: Retrofit
+    ) : IssuesListApi {
+        return retrofit.create(IssuesListApi::class.java)
+    }
 
     @Provides
     @Singleton

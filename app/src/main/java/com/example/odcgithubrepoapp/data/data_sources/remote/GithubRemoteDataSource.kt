@@ -1,7 +1,9 @@
 package com.example.odcgithubrepoapp.data.data_sources.remote
 
+import com.example.odcgithubrepoapp.data.data_sources.remote.retrofit.api.IssuesListApi
 import com.example.odcgithubrepoapp.data.data_sources.remote.retrofit.api.RepoDetailsApi
 import com.example.odcgithubrepoapp.data.data_sources.remote.retrofit.api.RepositoriesListApi
+import com.example.odcgithubrepoapp.data.data_sources.remote.retrofit.data_model.issues_list.GithubIssuesDataModel
 import com.example.odcgithubrepoapp.data.data_sources.remote.retrofit.data_model.repo_details.RepoDetailsDataModel
 import com.example.odcgithubrepoapp.data.data_sources.remote.retrofit.data_model.repo_list.GithubReposDataModel
 import com.example.odcgithubrepoapp.data.mapper.toCustomRemoteExceptionDomainModel
@@ -9,7 +11,8 @@ import javax.inject.Inject
 
 class GithubRemoteDataSource @Inject constructor(
     private val repositoryListApi: RepositoriesListApi,
-    private val repositoryDetailsApi: RepoDetailsApi
+    private val repositoryDetailsApi: RepoDetailsApi,
+    private val issuesListApi: IssuesListApi
 ) {
 
    suspend fun fetchRepositoriesList(): GithubReposDataModel {
@@ -28,4 +31,13 @@ class GithubRemoteDataSource @Inject constructor(
             throw e.toCustomRemoteExceptionDomainModel()
         }
     }
+
+    suspend fun fetchIssuesList(ownerName: String, name: String) : GithubIssuesDataModel {
+        try {
+            return issuesListApi.fetchIssuesList(ownerName,name).body() as GithubIssuesDataModel
+        } catch (e : Exception) {
+            throw  e.toCustomRemoteExceptionDomainModel()
+        }
+    }
+
 }
