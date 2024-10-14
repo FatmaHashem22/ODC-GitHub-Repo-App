@@ -46,6 +46,8 @@ import com.example.odcgithubrepoapp.presentation.screens.repo_details_screen.mod
 import com.example.odcgithubrepoapp.presentation.screens.repo_details_screen.model.RepoDetailsUiState
 import com.example.odcgithubrepoapp.presentation.screens.repo_details_screen.viewmodel.RepoDetailsViewModel
 import com.example.odcgithubrepoapp.presentation.theme.ODCGithubRepoAppTheme
+import com.example.odcgithubrepoapp.presentation.theme.light_background
+import com.example.odcgithubrepoapp.presentation.theme.light_secondary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,7 +115,7 @@ fun DetailsContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
-            .background(MaterialTheme.colorScheme.background)
+            .background(light_background)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -184,7 +186,7 @@ fun DetailsContent(
         Button(
             onClick = onShowIssuesClicked,
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary
+                containerColor = light_secondary
             ),
             modifier = Modifier
                 .fillMaxWidth()

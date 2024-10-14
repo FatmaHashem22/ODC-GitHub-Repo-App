@@ -28,6 +28,7 @@ import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.previe
 import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.preview_data.fakeRepoListUiState
 import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.viewmodel.RepoListViewModel
 import com.example.odcgithubrepoapp.presentation.theme.ODCGithubRepoAppTheme
+import com.example.odcgithubrepoapp.presentation.theme.light_background
 
 @Composable
 fun RepoListScreen(
@@ -89,7 +90,8 @@ fun RepoListContent(
                 Column(
                     Modifier
                         .padding(innerPadding)
-                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize()
+                        .background(light_background)
                 ) {
                     LazyColumn(
                         Modifier

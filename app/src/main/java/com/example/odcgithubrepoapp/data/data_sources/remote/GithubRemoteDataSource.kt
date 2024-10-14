@@ -34,7 +34,8 @@ class GithubRemoteDataSource @Inject constructor(
 
     suspend fun fetchIssuesList(ownerName: String, name: String) : GithubIssuesDataModel {
         try {
-            return issuesListApi.fetchIssuesList(ownerName,name).body() as GithubIssuesDataModel
+            val response = issuesListApi.fetchIssuesList(ownerName,name).body()!!
+            return GithubIssuesDataModel(response)
         } catch (e : Exception) {
             throw  e.toCustomRemoteExceptionDomainModel()
         }

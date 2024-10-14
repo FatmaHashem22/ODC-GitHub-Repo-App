@@ -3,7 +3,9 @@ package com.example.odcgithubrepoapp.presentation.mapper
 import com.example.odcgithubrepoapp.domain.model.GithubIssuesDomainModel
 import com.example.odcgithubrepoapp.presentation.screens.issues_screen.model.GithubIssuesUiModel
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 fun GithubIssuesDomainModel.toGithubIssuesUiModel() : GithubIssuesUiModel {
     return GithubIssuesUiModel(
@@ -11,14 +13,24 @@ fun GithubIssuesDomainModel.toGithubIssuesUiModel() : GithubIssuesUiModel {
         title = this.title,
         state = this.state,
         author = this.author,
-        createdAt = formatDate(this.createdAt),
-        closedAt = if (this.closedAt != null) formatDate(this.closedAt) else null
+        createdAt = formatDateTime(this.createdAt),
+//        createdAt = this.createdAt,
+//        closedAt = this.closedAt
+        closedAt = if (this.closedAt != null) formatDateTime(this.closedAt) else null
     )
 }
 
-private fun formatDate(isoDate: String): String {
-    val instant = Instant.parse(isoDate)
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-    return formatter.format(instant)
+private fun formatDateTime(input: String): String {
+    return try {
 
+        val inputFormatter = DateTimeFormatter.ISO_DATE_TIME
+        val dateTime = LocalDateTime.parse(input, inputFormatter)
+
+        val outputFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy, hh:mm a") // Example output format
+
+
+        dateTime.format(outputFormatter)
+    } catch (e: DateTimeParseException) {
+        "Invalid date format"
+    }
 }

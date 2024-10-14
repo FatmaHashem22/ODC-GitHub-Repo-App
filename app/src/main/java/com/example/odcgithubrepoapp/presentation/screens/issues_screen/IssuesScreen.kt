@@ -28,6 +28,7 @@ import com.example.odcgithubrepoapp.presentation.screens.issues_screen.preview_d
 import com.example.odcgithubrepoapp.presentation.screens.issues_screen.preview_data.fakeIssuesUiState
 import com.example.odcgithubrepoapp.presentation.screens.issues_screen.viewmodel.IssuesListViewModel
 import com.example.odcgithubrepoapp.presentation.theme.ODCGithubRepoAppTheme
+import com.example.odcgithubrepoapp.presentation.theme.light_background
 
 @Composable
 fun IssuesScreen(
@@ -96,7 +97,8 @@ fun IssuesContent(
                 Column(
                     modifier = Modifier
                         .padding(innerPadding)
-                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize()
+                        .background(light_background)
                 ) {
                     LazyColumn(
                         Modifier

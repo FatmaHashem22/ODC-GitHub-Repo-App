@@ -1,5 +1,6 @@
 package com.example.odcgithubrepoapp.presentation.screens.issues_screen.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.odcgithubrepoapp.domain.model.CustomRemoteExceptionDomainModel
@@ -43,6 +44,7 @@ class IssuesListViewModel @Inject constructor(
                     issuesList = issuesList.map { it.toGithubIssuesUiModel() }
                 )
             } catch (e : Exception) {
+                Log.d("Error", "CustomRemoteExceptionDomainModel: ${e.message}")
                 _issuesStateFlow.value = IssuesUiState(
                     isLoading = false,
                     isError = true,

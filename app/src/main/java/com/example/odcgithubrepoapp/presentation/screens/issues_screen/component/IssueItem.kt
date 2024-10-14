@@ -40,7 +40,7 @@ fun IssueItem(
         Icon(
             painter = painterResource(R.drawable.ic_issues),
             contentDescription = null,
-            modifier = Modifier.size(50.dp),
+            modifier = Modifier.size(30.dp),
 
             )
 
