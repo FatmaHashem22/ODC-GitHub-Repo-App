@@ -10,7 +10,7 @@ fun GithubReposDomainModel.toGithubReposUiModel(): GithubReposUiModel {
         name = this.name,
         avatarUrl = this.avatar,
         description = this.description,
-        starsCount = this.stars.toString(),
+        starsCount = this.stars,
         ownerName = this.ownerName
     )
 }

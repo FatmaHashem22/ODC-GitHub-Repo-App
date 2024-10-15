@@ -3,7 +3,8 @@ package com.example.odcgithubrepoapp.di
 import android.content.Context
 import androidx.room.Room
 import com.example.odcgithubrepoapp.data.data_sources.local.room.GithubRepositoriesDatabase
-import com.example.odcgithubrepoapp.data.data_sources.local.room.RepoListDao
+import com.example.odcgithubrepoapp.data.data_sources.local.room.dao.IssuesListDao
+import com.example.odcgithubrepoapp.data.data_sources.local.room.dao.RepoListDao
 import com.example.odcgithubrepoapp.presentation.utils.Constants.Companion.DATABASE_NAME
 import dagger.Module
 import dagger.Provides
@@ -32,7 +33,16 @@ object DatabaseModule {
     @Singleton
     fun provideRepoListDao(
         githubRepositoriesDatabase: GithubRepositoriesDatabase
-    ):RepoListDao {
+    ): RepoListDao {
         return githubRepositoriesDatabase.repoListDao()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideIssuesListDao(
+        githubRepositoriesDatabase: GithubRepositoriesDatabase
+    ) : IssuesListDao {
+        return githubRepositoriesDatabase.issueListDao()
     }
 }

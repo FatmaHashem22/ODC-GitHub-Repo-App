@@ -9,7 +9,7 @@ fun Item.toGithubReposDomainModel(): GithubReposDomainModel {
         name = this.name,
         ownerName = this.owner.login,
         avatar = this.owner.avatar_url,
-        stars = this.stargazers_count,
+        stars = this.stargazers_count.toString(),
         description = this.description
     )
 }

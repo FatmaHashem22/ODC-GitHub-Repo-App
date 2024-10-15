@@ -1,5 +1,6 @@
 package com.example.odcgithubrepoapp.di
 
+import android.content.Context
 import com.example.odcgithubrepoapp.data.data_sources.local.GithubLocalDataSource
 import com.example.odcgithubrepoapp.data.data_sources.remote.GithubRemoteDataSource
 import com.example.odcgithubrepoapp.data.repository.GithubIssuesRepositoryImpl
@@ -9,6 +10,7 @@ import com.example.odcgithubrepoapp.domain.repository.GithubReposRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -20,9 +22,10 @@ object RepositoryModule {
     @Singleton
     fun provideGithubReposRepository(
         githubRemoteDataSource: GithubRemoteDataSource,
-        localDataSource: GithubLocalDataSource
+        localDataSource: GithubLocalDataSource,
+        @ApplicationContext context : Context
     ): GithubReposRepository {
-        return GithubReposRepositoryImpl(githubRemoteDataSource, localDataSource)
+        return GithubReposRepositoryImpl(githubRemoteDataSource, localDataSource,context)
     }
 
     @Provides

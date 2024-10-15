@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class DataStorePreference(
     private val context: Context
@@ -22,15 +23,21 @@ class DataStorePreference(
         )
     }
 
-    suspend fun saveIsFirstTimeEnterApp(isFirstTime:Boolean){
-        context.dataStore.edit { mutablePreferences ->
-            mutablePreferences[PreferenceKeys.isFirstTimeKey] = isFirstTime
+    fun readIsFirstTimeEnterApp() : Flow<Boolean> {
+        return context.dataStore.data.map { preferences ->
+            preferences[PreferenceKeys.isFirstTimeKey] ?: true
         }
     }
 
-    fun readIsFirstTimeEnterApp(): Flow<Boolean> {
-        return flow {
-            context.dataStore.data.first()[PreferenceKeys.isFirstTimeKey]
+    suspend fun saveIsFirstTimeEnterApp(){
+        context.dataStore.edit { mutablePreferences ->
+            mutablePreferences[PreferenceKeys.isFirstTimeKey] = false
         }
     }
+
+//    fun readIsFirstTimeEnterApp(): Flow<Boolean> {
+//        return flow {
+//            context.dataStore.data.first()[PreferenceKeys.isFirstTimeKey]
+//        }
+//    }
 }

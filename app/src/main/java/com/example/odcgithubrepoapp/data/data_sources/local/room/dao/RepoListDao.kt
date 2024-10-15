@@ -1,4 +1,4 @@
-package com.example.odcgithubrepoapp.data.data_sources.local.room
+package com.example.odcgithubrepoapp.data.data_sources.local.room.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
