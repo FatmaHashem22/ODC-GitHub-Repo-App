@@ -1,5 +1,7 @@
 package com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.viewmodel
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.odcgithubrepoapp.domain.model.CustomRemoteExceptionDomainModel
@@ -10,6 +12,7 @@ import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.model.
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +23,8 @@ import javax.inject.Inject
 class RepoListViewModel @Inject constructor(
     private val githubReposListUseCase: FetchGithubReposListUseCase
 ) : ViewModel() {
+
+
     private val _repoListStateFlow = MutableStateFlow<RepoListUiState>(RepoListUiState(isLoading = true))
     val repoListStateFlow: StateFlow<RepoListUiState> = _repoListStateFlow.asStateFlow()
 
@@ -31,10 +36,11 @@ class RepoListViewModel @Inject constructor(
         )
     }
 
-    fun requestGithubRepoList() {
+    fun requestGithubRepoList(isForcedRefresh: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+
             try {
-                val repoList = githubReposListUseCase()
+                val repoList = githubReposListUseCase(isForcedRefresh)
                 _repoListStateFlow.value = RepoListUiState(
                     isLoading = false,
                     repoList = repoList.map { it.toGithubReposUiModel() }

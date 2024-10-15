@@ -24,7 +24,7 @@ class GithubReposRepositoryImpl @Inject constructor(
     private val githubLocalDataSource: GithubLocalDataSource,
     private val context: Context,
 ): GithubReposRepository {
-    override suspend fun fetchReposList(): List<GithubReposDomainModel> {
+    override suspend fun fetchReposList(isForcedRefresh : Boolean): List<GithubReposDomainModel> {
 
         val isFirstTime = githubLocalDataSource.readIfFirstTimeEnterApp().first()
 
@@ -38,7 +38,7 @@ class GithubReposRepositoryImpl @Inject constructor(
         } else {
             Log.d("Cached","DataStore isFirstTime false")
 
-            if (NetworkUtils.isNetworkAvailable(context)) {
+            if (NetworkUtils.isNetworkAvailable(context) && isForcedRefresh) {
                 Log.d("Cached","Internet Connected call api")
                 val remoteRepos = githubRemoteDataSource.fetchRepositoriesList().items
                 githubLocalDataSource.insertRepos(remoteRepos.map { it.toRepoEntity() })

@@ -1,17 +1,25 @@
 package com.example.odcgithubrepoapp.presentation.screens.repo_list_screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.pullToRefresh
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.odcgithubrepoapp.R
 import com.example.odcgithubrepoapp.presentation.common_component.AppBar
+import com.example.odcgithubrepoapp.presentation.common_component.CustomIndicator
 import com.example.odcgithubrepoapp.presentation.common_component.ErrorSection
 import com.example.odcgithubrepoapp.presentation.common_component.shimmer.repo_list.AnimateShimmerRepoList
 import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.component.RepoItem
@@ -29,25 +38,32 @@ import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.previe
 import com.example.odcgithubrepoapp.presentation.screens.repo_list_screen.viewmodel.RepoListViewModel
 import com.example.odcgithubrepoapp.presentation.theme.ODCGithubRepoAppTheme
 import com.example.odcgithubrepoapp.presentation.theme.light_background
+import com.example.odcgithubrepoapp.presentation.theme.light_secondary
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepoListScreen(
     onRepoItemClicked: (String, String) -> Unit
 ) {
+//    val swipeToRefresh = rem
     val repoListViewModel: RepoListViewModel = hiltViewModel()
     LaunchedEffect(Unit) {
         repoListViewModel.requestGithubRepoList()
     }
     val repoListUiSate by repoListViewModel.repoListStateFlow.collectAsStateWithLifecycle()
 
+
     RepoListContent(
         repoListUiSate = repoListUiSate,
         onRefreshButtonClicked = {
             repoListViewModel.requestGithubRepoList()
         },
-        onRepoItemClicked = onRepoItemClicked
+        onRepoItemClicked = onRepoItemClicked,
+        onPullToRefresh = { repoListViewModel.requestGithubRepoList(true) }
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,8 +72,14 @@ fun RepoListContent(
     modifier: Modifier = Modifier,
     repoListUiSate: RepoListUiState,
     onRefreshButtonClicked: () -> Unit,
-    onRepoItemClicked: (String, String) -> Unit
+    onRepoItemClicked: (String, String) -> Unit,
+    onPullToRefresh: () -> Unit
 ) {
+
+    val pullToRefreshState = rememberPullToRefreshState()
+    val isRefreshing = rememberSaveable { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         modifier = modifier
             .fillMaxSize()
@@ -87,11 +109,24 @@ fun RepoListContent(
             }
 
             repoListUiSate.repoList.isNotEmpty() -> {
-                Column(
-                    Modifier
+
+                PullToRefreshBox(
+                    state = pullToRefreshState,
+                    isRefreshing = isRefreshing.value,
+                    modifier = Modifier
                         .padding(innerPadding)
                         .fillMaxSize()
-                        .background(light_background)
+                        .background(
+                            light_background
+                        ),
+                    onRefresh = {
+                        coroutineScope.launch {
+                            isRefreshing.value = true
+                            delay(5.seconds)
+                            onPullToRefresh()
+                            isRefreshing.value = false
+                        }
+                    }
                 ) {
                     LazyColumn(
                         Modifier
@@ -105,7 +140,9 @@ fun RepoListContent(
                             )
                         }
                     }
+
                 }
+
 
             }
         }
@@ -120,7 +157,8 @@ private fun PreviewRepoListScreen() {
         RepoListContent(
             repoListUiSate = fakeRepoListUiState,
             onRefreshButtonClicked = {},
-            onRepoItemClicked = { _, _ -> }
+            onRepoItemClicked = { _, _ -> },
+            onPullToRefresh = {}
         )
     }
 }
@@ -132,7 +170,8 @@ private fun PreviewRepoListScreenLoading() {
         RepoListContent(
             repoListUiSate = fakeRepoListLoadingUiState,
             onRefreshButtonClicked = {},
-            onRepoItemClicked = { _, _ -> }
+            onRepoItemClicked = { _, _ -> },
+            onPullToRefresh = {}
         )
     }
 }
@@ -144,7 +183,8 @@ private fun PreviewRepoListScreenError() {
         RepoListContent(
             repoListUiSate = fakeRepoListErrorUiState,
             onRefreshButtonClicked = {},
-            onRepoItemClicked = { _, _ -> }
+            onRepoItemClicked = { _, _ -> },
+            onPullToRefresh = {}
         )
     }
 }

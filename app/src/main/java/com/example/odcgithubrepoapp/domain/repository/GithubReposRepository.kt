@@ -7,7 +7,7 @@ import com.example.odcgithubrepoapp.domain.model.GithubReposDomainModel
 import com.example.odcgithubrepoapp.domain.model.RepoDetailsDomainModel
 
 interface GithubReposRepository {
-    suspend fun fetchReposList(): List<GithubReposDomainModel>
+    suspend fun fetchReposList(isForcedRefresh : Boolean): List<GithubReposDomainModel>
     suspend fun fetchRepoDetails(ownerName: String, name: String): RepoDetailsDomainModel
     suspend fun getCachedReposList(): List<ReposListEntity>
     suspend fun insertRepos(repoList: List<ReposListEntity>)

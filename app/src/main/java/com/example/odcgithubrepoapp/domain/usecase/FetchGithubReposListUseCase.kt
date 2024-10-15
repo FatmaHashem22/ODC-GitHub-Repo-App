@@ -4,11 +4,11 @@ import com.example.odcgithubrepoapp.domain.model.GithubReposDomainModel
 import com.example.odcgithubrepoapp.domain.repository.GithubReposRepository
 import javax.inject.Inject
 
-class FetchGithubReposListUseCase @Inject constructor(
+class  FetchGithubReposListUseCase @Inject constructor(
     private val githubReposRepository: GithubReposRepository
 ) {
-    suspend operator fun invoke(): List<GithubReposDomainModel> {
-        return githubReposRepository.fetchReposList()
+    suspend operator fun invoke(isForcedRefresh : Boolean): List<GithubReposDomainModel> {
+        return githubReposRepository.fetchReposList(isForcedRefresh)
     }
 }
 
