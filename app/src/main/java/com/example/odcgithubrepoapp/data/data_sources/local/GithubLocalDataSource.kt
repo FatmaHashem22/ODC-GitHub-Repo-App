@@ -21,9 +21,14 @@ class GithubLocalDataSource @Inject constructor(
         repoListDao.insertReposList(repoList)
     }
 
+    suspend fun updateReposList(repoList : List<ReposListEntity>){
+        repoListDao.updateReposList(repoList)
+    }
+
     suspend fun insertIssuesList(issuesList : List<IssuesListEntity>){
         issuesListDao.insertIssuesList(issuesList)
     }
+
 
     suspend fun getIssuesList() : List<IssuesListEntity> {
         return issuesListDao.getIssuesList()

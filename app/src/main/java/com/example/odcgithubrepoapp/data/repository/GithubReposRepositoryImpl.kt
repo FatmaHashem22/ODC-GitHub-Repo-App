@@ -41,7 +41,7 @@ class GithubReposRepositoryImpl @Inject constructor(
             if (NetworkUtils.isNetworkAvailable(context) && isForcedRefresh) {
                 Log.d("Cached","Internet Connected call api")
                 val remoteRepos = githubRemoteDataSource.fetchRepositoriesList().items
-                githubLocalDataSource.insertRepos(remoteRepos.map { it.toRepoEntity() })
+                githubLocalDataSource.updateReposList(remoteRepos.map { it.toRepoEntity() })
                 return remoteRepos.map { it.toGithubReposDomainModel() }
             } else {
                 Log.d("Cached","Internet NOT Connected fetch cache")
