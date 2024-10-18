@@ -41,4 +41,11 @@ class GithubLocalDataSource @Inject constructor(
         dataStorePreference.saveIsFirstTimeEnterApp()
     }
 
+    suspend fun saveThemePreference(isDark: Boolean) {
+        dataStorePreference.saveThemePreference(isDark)
+    }
+    fun readIsDarkTheme(): Flow<Boolean> {
+        return dataStorePreference.isDarkTheme
+    }
+
 }

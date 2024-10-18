@@ -34,13 +34,15 @@ import com.example.odcgithubrepoapp.R
 import com.example.odcgithubrepoapp.presentation.model.CustomRemoteExceptionUiModel
 import com.example.odcgithubrepoapp.presentation.theme.LightGray
 import com.example.odcgithubrepoapp.presentation.theme.LightGreen
+import com.example.odcgithubrepoapp.presentation.theme.ODCGithubRepoAppTheme
 
 
 @Composable
 fun ErrorSection(
     innerPadding: PaddingValues,
     onRefreshButtonClicked: () -> Unit,
-    customErrorExceptionUiModel: CustomRemoteExceptionUiModel
+    customErrorExceptionUiModel: CustomRemoteExceptionUiModel,
+    theme : Boolean
 ) {
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.error_animation))
     val errorMessage = when(customErrorExceptionUiModel){
@@ -51,7 +53,7 @@ fun ErrorSection(
         is CustomRemoteExceptionUiModel.Unknown -> stringResource(R.string.unknown_exception_message)
 
     }
-    Column(
+    ODCGithubRepoAppTheme (darkTheme = theme) { Column(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize()
@@ -83,7 +85,7 @@ fun ErrorSection(
             style = MaterialTheme.typography.bodyLarge,
             color = LightGray,
         )
-        
+
         Spacer(modifier = Modifier.height(80.dp))
 
         OutlinedButton(
@@ -102,7 +104,8 @@ fun ErrorSection(
                 modifier = Modifier.padding(vertical = 4.dp)
             )
         }
-    }
+    } }
+
 }
 
 @Preview
@@ -111,7 +114,8 @@ fun PreviewNoInternetConnection() {
     ErrorSection(
         innerPadding = PaddingValues(12.dp),
         onRefreshButtonClicked = {},
-        customErrorExceptionUiModel = CustomRemoteExceptionUiModel.NoInternetConnection
+        customErrorExceptionUiModel = CustomRemoteExceptionUiModel.NoInternetConnection,
+        theme = true
     )
 }
 

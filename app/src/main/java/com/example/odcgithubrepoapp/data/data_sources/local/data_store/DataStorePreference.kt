@@ -17,10 +17,25 @@ class DataStorePreference(
     companion object {
         private object PreferenceKeys {
             val isFirstTimeKey = booleanPreferencesKey("isFirstTime")
+            val isDarkThemeKey = booleanPreferencesKey("isDarkTheme")
         }
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
             name = ""
         )
+
+    }
+    val isDarkTheme: Flow<Boolean> = context.dataStore.data.map { preferences ->
+            preferences[PreferenceKeys.isDarkThemeKey] ?: false
+        }
+
+
+
+    suspend fun saveThemePreference(isDark: Boolean) {
+
+        context.dataStore.edit { preferences ->
+            preferences[PreferenceKeys.isDarkThemeKey] = isDark
+        }
+
     }
 
     fun readIsFirstTimeEnterApp() : Flow<Boolean> {
