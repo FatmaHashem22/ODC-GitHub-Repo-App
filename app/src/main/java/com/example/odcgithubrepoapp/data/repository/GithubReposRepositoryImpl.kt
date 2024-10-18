@@ -1,8 +1,6 @@
 package com.example.odcgithubrepoapp.data.repository
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.util.Log
 import com.example.odcgithubrepoapp.data.data_sources.local.GithubLocalDataSource
 import com.example.odcgithubrepoapp.data.data_sources.local.room.entities.IssuesListEntity
@@ -16,6 +14,7 @@ import com.example.odcgithubrepoapp.domain.model.GithubReposDomainModel
 import com.example.odcgithubrepoapp.domain.model.RepoDetailsDomainModel
 import com.example.odcgithubrepoapp.domain.repository.GithubReposRepository
 import com.example.odcgithubrepoapp.presentation.utils.NetworkUtils
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -27,6 +26,7 @@ class GithubReposRepositoryImpl @Inject constructor(
     override suspend fun fetchReposList(isForcedRefresh : Boolean): List<GithubReposDomainModel> {
 
         val isFirstTime = githubLocalDataSource.readIfFirstTimeEnterApp().first()
+
 
         if(isFirstTime){
             Log.d("Cached","DataStore isFirstTime true")
@@ -66,6 +66,17 @@ class GithubReposRepositoryImpl @Inject constructor(
 
     override suspend fun fetchRepoDetails(ownerName: String, name: String): RepoDetailsDomainModel {
         return githubRemoteDataSource.fetchRepoDetails(ownerName, name).toRepoDetailsDomainModel()
+    }
+
+    override suspend fun getThemePreference(): Flow<Boolean> {
+
+        return githubLocalDataSource.readIsDarkTheme()
+
+    }
+
+
+    override suspend fun saveThemePreference(isDark: Boolean) {
+        githubLocalDataSource.saveThemePreference(isDark)
     }
 
     override suspend fun getCachedReposList(): List<ReposListEntity> {

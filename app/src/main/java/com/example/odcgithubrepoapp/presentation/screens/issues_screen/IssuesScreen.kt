@@ -2,6 +2,7 @@ package com.example.odcgithubrepoapp.presentation.screens.issues_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,8 +32,9 @@ import com.example.odcgithubrepoapp.presentation.screens.issues_screen.preview_d
 import com.example.odcgithubrepoapp.presentation.screens.issues_screen.preview_data.fakeIssuesUiState
 import com.example.odcgithubrepoapp.presentation.screens.issues_screen.viewmodel.IssuesListViewModel
 import com.example.odcgithubrepoapp.presentation.theme.ODCGithubRepoAppTheme
-import com.example.odcgithubrepoapp.presentation.theme.light_background
+import com.example.odcgithubrepoapp.presentation.common_component.ThemeSwitcherViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IssuesScreen(
     modifier: Modifier = Modifier,
@@ -39,6 +44,9 @@ fun IssuesScreen(
 ) {
 
     val issuesViewModel: IssuesListViewModel = hiltViewModel()
+    val themeViewModel : ThemeSwitcherViewModel = hiltViewModel()
+
+    var theme by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         issuesViewModel.requestGithubIssuesList(ownerName,name)
@@ -46,77 +54,94 @@ fun IssuesScreen(
 
     val issuesUiState by issuesViewModel.issuesStateFlow.collectAsStateWithLifecycle()
 
-    IssuesContent(
-        issuesUiState = issuesUiState,
-        onRefreshButtonClicked = {
-            issuesViewModel.requestGithubIssuesList(ownerName,name)
-        },
-        onClickBack = onClickBack
-    )
+    theme = themeViewModel.isDark.collectAsStateWithLifecycle().value
+
+    val toggleTheme = {
+        themeViewModel.toggleTheme()
+    }
+
+    ODCGithubRepoAppTheme(darkTheme = theme) {
+        Scaffold(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            topBar = {
+                AppBar(
+                    title = R.string.issues_app_bar_title,
+                    onBackButtonClicked = onClickBack,
+                    onDarkThemeChange = { toggleTheme() } ,
+                    isDarkTheme = theme
+                )
+            }
+        ) { innerPadding ->
+
+            when {
+                issuesUiState.isLoading -> {
+                    AnimateShimmerIssuesList(
+                        innerPadding = innerPadding,
+                        theme = theme
+                    )
+                }
+
+                issuesUiState.isError -> {
+                    ErrorSection(
+                        innerPadding = innerPadding,
+                        customErrorExceptionUiModel = issuesUiState.customRemoteExceptionUiModel,
+                        onRefreshButtonClicked = {
+                            issuesViewModel.requestGithubIssuesList(ownerName,name)
+                        },
+                        theme = theme
+                    )
+                }
+
+                issuesUiState.issuesList.isNotEmpty() -> {
+                    IssuesContent(
+                        issuesUiState = issuesUiState,
+                        innerPadding = innerPadding,
+                        theme = theme
+                    )
+                }
+            }
+
+
+        }
+    }
+
+
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IssuesContent(
-    modifier: Modifier = Modifier,
     issuesUiState: IssuesUiState,
-    onRefreshButtonClicked: () -> Unit,
-    onClickBack: () -> Unit,
+    innerPadding: PaddingValues,
+    theme: Boolean
 ) {
-    Scaffold(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        topBar = {
-            AppBar(
-                title = R.string.issues_app_bar_title,
-                onBackButtonClicked = onClickBack
-            )
-        }
-    ) { innerPadding ->
 
-        when {
-            issuesUiState.isLoading -> {
-                AnimateShimmerIssuesList(
-                    innerPadding = innerPadding
-                )
-            }
-
-            issuesUiState.isError -> {
-                ErrorSection(
-                    innerPadding = innerPadding,
-                    customErrorExceptionUiModel = issuesUiState.customRemoteExceptionUiModel,
-                    onRefreshButtonClicked = {
-                        onRefreshButtonClicked()
-                    }
-                )
-            }
-
-            issuesUiState.issuesList.isNotEmpty() -> {
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                        .background(light_background)
-                ) {
-                    LazyColumn(
-                        Modifier
-                            .padding(horizontal = 16.dp)
-                            .padding(bottom = 16.dp)
-                    ) {
-                        items(issuesUiState.issuesList) { githubIssuesUiModel ->
-                            IssueItem(
-                                githubIssuesUiModel = githubIssuesUiModel
-                            )
-                        }
-                    }
+    ODCGithubRepoAppTheme (darkTheme = theme){
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            LazyColumn(
+                Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp)
+            ) {
+                items(issuesUiState.issuesList) { githubIssuesUiModel ->
+                    IssueItem(
+                        githubIssuesUiModel = githubIssuesUiModel,
+                        theme = theme
+                    )
                 }
             }
         }
-
-
     }
+
+
 }
 
 @Preview
@@ -125,8 +150,8 @@ private fun PreviewIssuesScreen() {
     ODCGithubRepoAppTheme {
         IssuesContent(
             issuesUiState = fakeIssuesUiState,
-            onRefreshButtonClicked = {},
-            onClickBack = {}
+            innerPadding = PaddingValues(12.dp),
+            theme = true
         )
     }
 }
@@ -137,8 +162,8 @@ private fun PreviewIssuesScreenLoading() {
     ODCGithubRepoAppTheme {
         IssuesContent(
             issuesUiState = fakeIssuesLoadingUiState,
-            onRefreshButtonClicked = {},
-            onClickBack = {}
+            innerPadding = PaddingValues(12.dp),
+            theme = true
         )
     }
 }
@@ -149,8 +174,8 @@ private fun PreviewIssuesScreenError() {
     ODCGithubRepoAppTheme {
         IssuesContent(
             issuesUiState = fakeIssuesErrorUiState,
-            onRefreshButtonClicked = {},
-            onClickBack = {}
+            innerPadding = PaddingValues(12.dp),
+            theme = true
         )
     }
 }

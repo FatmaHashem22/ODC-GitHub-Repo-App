@@ -75,6 +75,8 @@ dependencies {
     // navigation
     implementation(libs.androidx.navigation.compose)
 
+    implementation(libs.androidx.material.icons)
+
 
 
     testImplementation(libs.mockk)
@@ -100,6 +102,8 @@ dependencies {
 
     implementation(libs.room)
     ksp(libs.room.compiler)
+    implementation(libs.room.paging)
+    implementation(libs.paging.compose)
 
     implementation(libs.datastore)
     implementation(libs.lottie.compose)

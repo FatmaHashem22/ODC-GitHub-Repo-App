@@ -16,29 +16,24 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
-    primary = light_primary,
-    onPrimary = light_onPrimary,
-    secondary = light_secondary,
-    onSecondary = light_onSecondary,
+    primary = ThemeColors.Day.primary,
+    onPrimary = ThemeColors.Day.text,
+    secondary = ThemeColors.Day.secondary,
     error = light_error,
     onError = light_onError,
-    background = light_background,
-    onBackground = light_onBackground,
-    surface = light_surface,
-    onSurface = light_onSurface,
+    background = ThemeColors.Day.background,
+    surface = ThemeColors.Day.surface,
+
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = light_primary,
-    onPrimary = light_onPrimary,
-    secondary = light_secondary,
-    onSecondary = light_onSecondary,
+    primary = ThemeColors.Night.primary,
+    onPrimary = ThemeColors.Night.text,
+    secondary = ThemeColors.Night.secondary,
     error = light_error,
     onError = light_onError,
-    background = light_background,
-    onBackground = light_onBackground,
-    surface = light_surface,
-    onSurface = light_onSurface,
+    background = ThemeColors.Night.background,
+    surface = ThemeColors.Night.surface,
 )
 
 @Composable
@@ -57,11 +52,13 @@ fun ODCGithubRepoAppTheme(
         else -> LightColorScheme
     }
 
+    val statusBar = ThemeColors.Day.accent
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
+            window.statusBarColor = statusBar.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
